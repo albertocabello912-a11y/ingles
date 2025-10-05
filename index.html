@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LingoSphere AI - Plataforma de Aprendizaje</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f7f4;
+            color: #44403c;
+        }
+        .chat-window {
+            height: 50vh;
+            max-height: 450px;
+            overflow-y: auto;
+        }
+        details > summary {
+            cursor: pointer;
+        }
+        .is-listening {
+            background-color: #ef4444 !important;
+        }
+        .lesson-locked {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        .lesson-locked summary::after {
+            content: '🔒';
+            margin-left: 10px;
+        }
+        .lesson-completed summary {
+            color: #0d9488; /* teal-600 */
+        }
+         .lesson-completed summary::after {
+            content: '✔️';
+            margin-left: 10px;
+        }
+        .quiz-feedback {
+            display: none;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+        .quiz-feedback.correct {
+            color: #16a34a; /* green-600 */
+        }
+        .quiz-feedback.incorrect {
+            color: #dc2626; /* red-600 */
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Vista de Registro -->
+    <div id="registration-view" class="min-h-screen flex items-center justify-center bg-stone-100 p-4">
+        <div class="max-w-md w-full bg-white p-8 rounded-xl shadow-lg text-center">
+            <h1 class="text-3xl font-bold text-cyan-700 mb-2">Bienvenido a LingoSphere AI</h1>
+            <p class="text-stone-600 mb-8">Regístrate para comenzar tu aventura de aprendizaje.</p>
+            <form id="registration-form" class="space-y-4">
+                <input type="text" id="first-name" placeholder="Nombre" class="w-full px-4 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500" required>
+                <input type="text" id="last-name" placeholder="Apellido" class="w-full px-4 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500" required>
+                <input type="email" id="email" placeholder="Correo Electrónico" class="w-full px-4 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500" required>
+                <button type="submit" class="w-full bg-cyan-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-cyan-700 transition-transform transform hover:scale-105">Acceder</button>
+            </form>
+            <div class="my-6 flex items-center">
+                <div class="flex-grow border-t border-stone-300"></div>
+                <span class="mx-4 text-stone-500 text-sm">O</span>
+                <div class="flex-grow border-t border-stone-300"></div>
+            </div>
+            <button id="google-signin-btn" class="w-full bg-white border border-stone-300 text-stone-700 font-semibold py-3 px-6 rounded-lg hover:bg-stone-50 transition-all flex items-center justify-center gap-2">
+                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.222 0-9.519-3.483-11.127-8.169l-6.571 4.819C9.656 39.663 16.318 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C43.021 36.697 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
+                Iniciar sesión con Google
+            </button>
+            <p id="auth-error" class="text-red-500 text-sm mt-4 hidden"></p>
+        </div>
+    </div>
+
+    <!-- Vista Principal de la App (Dashboard) -->
+    <div id="dashboard-view" class="hidden">
+        <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+            <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+                <h1 class="text-2xl font-bold text-cyan-700">LingoSphere AI</h1>
+                <div id="welcome-message" class="text-stone-700 font-semibold"></div>
+            </nav>
+        </header>
+        <main class="container mx-auto p-6">
+            <section id="features" class="py-12">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold text-stone-800">Tu Centro de Aprendizaje</h2>
+                    <p class="mt-2 text-stone-600 max-w-2xl mx-auto">Elige una actividad para empezar a mejorar tu inglés hoy mismo.</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                    <div class="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition-shadow flex flex-col">
+                        <h3 class="text-2xl font-bold mb-4 text-cyan-800">📝 Clases Interactivas</h3>
+                        <p class="text-stone-600 mb-6 flex-grow">Aprende gramática y vocabulario de forma estructurada con nuestras lecciones en formato de episodios. Cada una incluye explicaciones claras, guías de pronunciación y ejercicios prácticos para reforzar tu conocimiento.</p>
+                        <button id="go-to-lessons" class="w-full bg-cyan-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-cyan-700 transition-transform transform hover:scale-105">Empezar Lecciones</button>
+                    </div>
+                    <div class="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition-shadow flex flex-col">
+                        <h3 class="text-2xl font-bold mb-4 text-cyan-800">🤖 Chat con Tutor IA</h3>
+                        <p class="text-stone-600 mb-6 flex-grow">La mejor manera de aprender es practicando. Conversa por texto o voz con nuestro tutor de IA. Recibe traducciones y escucha la pronunciación para ganar fluidez y confianza en conversaciones reales.</p>
+                        <button id="go-to-tutor" class="w-full bg-cyan-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-cyan-700 transition-transform transform hover:scale-105">Practicar Conversación</button>
+                    </div>
+                </div>
+            </section>
+            <section id="tips" class="py-12">
+                <div class="max-w-5xl mx-auto bg-white p-8 rounded-lg shadow-lg">
+                     <h3 class="text-2xl font-bold text-center mb-8 text-stone-800">Cómo Mejorar tu Aprendizaje</h3>
+                     <div class="grid md:grid-cols-3 gap-8 text-center">
+                        <div>
+                            <span class="text-4xl">🗓️</span>
+                            <h4 class="font-semibold text-lg my-2">Practica Diariamente</h4>
+                            <p class="text-stone-600 text-sm">La consistencia es clave. Dedica al menos 15 minutos cada día a una lección o una conversación con el tutor.</p>
+                        </div>
+                        <div>
+                            <span class="text-4xl">🗣️</span>
+                            <h4 class="font-semibold text-lg my-2">Habla sin Miedo</h4>
+                            <p class="text-stone-600 text-sm">Usa la función de voz del chat. Cometer errores es parte del proceso. La IA está aquí para ayudarte, no para juzgarte.</p>
+                        </div>
+                        <div>
+                            <span class="text-4xl">✍️</span>
+                            <h4 class="font-semibold text-lg my-2">Repite y Revisa</h4>
+                            <p class="text-stone-600 text-sm">Vuelve a las lecciones pasadas. Escucha las respuestas de la IA varias veces para mejorar tu comprensión y pronunciación.</p>
+                        </div>
+                     </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Vista de Lecciones -->
+    <div id="lessons-view" class="hidden min-h-screen bg-stone-50 p-6 md:p-12">
+        <div class="max-w-4xl mx-auto">
+            <button class="back-to-dashboard mb-8 bg-white border border-stone-300 py-2 px-4 rounded-full hover:bg-stone-100 transition-colors">&larr; Volver al Inicio</button>
+            <h2 class="text-3xl font-bold text-stone-800 mb-2">Ruta de Aprendizaje</h2>
+            <p class="text-stone-600 mb-8">Completa cada lección y su quiz para desbloquear la siguiente. ¡Buen estudio!</p>
+            <div id="lessons-container" class="space-y-4">
+                <!-- Lección 1 -->
+                <details id="lesson-1" class="lesson bg-white p-6 rounded-lg shadow-sm group">
+                    <summary class="text-xl font-semibold text-stone-700 list-none group-hover:text-cyan-700">Episodio 1: El Verbo 'To Be'</summary>
+                    <div class="mt-4 pt-4 border-t">
+                        <p class="text-stone-600 mt-2"><b>Explicación:</b> El verbo 'To Be' (Ser/Estar) es fundamental. Se usa para descripciones, estados y localizaciones. Formas: <span class="font-mono bg-stone-100 px-1 rounded">am</span> (I), <span class="font-mono bg-stone-100 px-1 rounded">is</span> (he/she/it), <span class="font-mono bg-stone-100 px-1 rounded">are</span> (you/we/they).</p>
+                        <h4 class="font-semibold mt-4">Quiz de Verificación</h4>
+                        <div class="quiz mt-2 space-y-3">
+                            <div class="quiz-question">
+                                <p>1. Which form is correct? "They ___ happy."</p>
+                                <div class="flex gap-4"><label><input type="radio" name="q1-1" value="is"> is</label><label><input type="radio" name="q1-1" value="are" data-correct="true"> are</label><label><input type="radio" name="q1-1" value="am"> am</label></div>
+                            </div>
+                            <div class="quiz-question">
+                                <p>2. Which form is correct? "He ___ a student."</p>
+                                <div class="flex gap-4"><label><input type="radio" name="q1-2" value="is" data-correct="true"> is</label><label><input type="radio" name="q1-2" value="are"> are</label><label><input type="radio" name="q1-2" value="am"> am</label></div>
+                            </div>
+                        </div>
+                        <button class="complete-lesson-btn mt-4 bg-cyan-600 text-white px-4 py-2 rounded-md hover:bg-cyan-700">Completar Lección</button>
+                        <p class="quiz-feedback"></p>
+                    </div>
+                </details>
+                <!-- Lección 2 -->
+                <details id="lesson-2" class="lesson lesson-locked bg-white p-6 rounded-lg shadow-sm group">
+                    <summary class="text-xl font-semibold text-stone-700 list-none group-hover:text-cyan-700">Episodio 2: El Verbo 'To Have'</summary>
+                    <div class="mt-4 pt-4 border-t">
+                        <p class="text-stone-600 mt-2"><b>Explicación:</b> 'To Have' (Tener) indica posesión. Formas: <span class="font-mono bg-stone-100 px-1 rounded">have</span> (I/you/we/they) y <span class="font-mono bg-stone-100 px-1 rounded">has</span> (he/she/it).</p>
+                        <h4 class="font-semibold mt-4">Quiz de Verificación</h4>
+                        <div class="quiz mt-2 space-y-3">
+                            <div class="quiz-question">
+                               <p>1. Which form is correct? "She ___ a cat."</p>
+                                <div class="flex gap-4"><label><input type="radio" name="q2-1" value="have"> have</label><label><input type="radio" name="q2-1" value="has" data-correct="true"> has</label></div>
+                            </div>
+                            <div class="quiz-question">
+                                <p>2. Which form is correct? "We ___ a house."</p>
+                                <div class="flex gap-4"><label><input type="radio" name="q2-2" value="have" data-correct="true"> have</label><label><input type="radio" name="q2-2" value="has"> has</label></div>
+                            </div>
+                        </div>
+                        <button class="complete-lesson-btn mt-4 bg-cyan-600 text-white px-4 py-2 rounded-md hover:bg-cyan-700">Completar Lección</button>
+                        <p class="quiz-feedback"></p>
+                    </div>
+                </details>
+                <!-- Lección 3 -->
+                 <details id="lesson-3" class="lesson lesson-locked bg-white p-6 rounded-lg shadow-sm group">
+                    <summary class="text-xl font-semibold text-stone-700 list-none group-hover:text-cyan-700">Episodio 3: Artículos 'A/An/The'</summary>
+                    <div class="mt-4 pt-4 border-t">
+                        <p class="text-stone-600 mt-2"><b>Explicación:</b> 'A/An' son para algo no específico ('un/una'). 'An' se usa antes de un sonido de vocal (an apple, an hour). 'The' es para algo específico ('el/la/los/las') que ya conocemos (The sun is hot).</p>
+                        <h4 class="font-semibold mt-4">Quiz de Verificación</h4>
+                        <div class="quiz mt-2 space-y-3">
+                            <div class="quiz-question">
+                               <p>1. Choose the correct article: "I see ___ apple."</p>
+                                <div class="flex gap-4"><label><input type="radio" name="q3-1" value="a"> a</label><label><input type="radio" name="q3-1" value="an" data-correct="true"> an</label><label><input type="radio" name="q3-1" value="the"> the</label></div>
+                            </div>
+                             <div class="quiz-question">
+                               <p>2. Choose the correct article: "___ sun is bright."</p>
+                                <div class="flex gap-4"><label><input type="radio" name="q3-2" value="A"> A</label><label><input type="radio" name="q3-2" value="An"> An</label><label><input type="radio" name="q3-2" value="The" data-correct="true"> The</label></div>
+                            </div>
+                        </div>
+                        <button class="complete-lesson-btn mt-4 bg-cyan-600 text-white px-4 py-2 rounded-md hover:bg-cyan-700">Completar Lección</button>
+                        <p class="quiz-feedback"></p>
+                    </div>
+                </details>
+                <!-- Lección 4 -->
+                <details id="lesson-4" class="lesson lesson-locked bg-white p-6 rounded-lg shadow-sm group">
+                    <summary class="text-xl font-semibold text-stone-700 list-none group-hover:text-cyan-700">Episodio 4: Presente Simple</summary>
+                     <div class="mt-4 pt-4 border-t">
+                        <p class="text-stone-600 mt-2"><b>Explicación:</b> Usamos el Presente Simple para hábitos, rutinas y hechos generales. Para 'he', 'she', e 'it', añadimos -s o -es al verbo. Ejemplo: "I walk", pero "She walk<span class='font-bold'>s</span>".</p>
+                        <h4 class="font-semibold mt-4">Quiz de Verificación</h4>
+                        <div class="quiz mt-2 space-y-3">
+                            <div class="quiz-question">
+                               <p>1. Which form is correct? "She ___ (work) in an office."</p>
+                                <div class="flex gap-4"><label><input type="radio" name="q4-1" value="work"> work</label><label><input type="radio" name="q4-1" value="works" data-correct="true"> works</label></div>
+                            </div>
+                             <div class="quiz-question">
+                               <p>2. Which form is correct? "They ___ (play) tennis."</p>
+                                <div class="flex gap-4"><label><input type="radio" name="q4-2" value="play" data-correct="true"> play</label><label><input type="radio" name="q4-2" value="plays"> plays</label></div>
+                            </div>
+                        </div>
+                        <button class="complete-lesson-btn mt-4 bg-cyan-600 text-white px-4 py-2 rounded-md hover:bg-cyan-700">Completar Lección</button>
+                        <p class="quiz-feedback"></p>
+                    </div>
+                </details>
+                 <!-- Lección 5 -->
+                <details id="lesson-5" class="lesson lesson-locked bg-white p-6 rounded-lg shadow-sm group">
+                    <summary class="text-xl font-semibold text-stone-700 list-none group-hover:text-cyan-700">Episodio 5: Formando Preguntas</summary>
+                     <div class="mt-4 pt-4 border-t">
+                        <p class="text-stone-600 mt-2"><b>Explicación:</b> Para hacer preguntas en Presente Simple, usamos los auxiliares 'Do' y 'Does'. 'Do' para I/you/we/they. 'Does' para he/she/it. Estructura: <span class="font-mono bg-stone-100 px-1 rounded">(Do/Does) + sujeto + verbo?</span>. Ejemplo: "Do you like music?".</p>
+                        <h4 class="font-semibold mt-4">Quiz de Verificación</h4>
+                        <div class="quiz mt-2 space-y-3">
+                            <div class="quiz-question">
+                               <p>1. Complete the question: "___ she speak French?"</p>
+                                <div class="flex gap-4"><label><input type="radio" name="q5-1" value="Do"> Do</label><label><input type="radio" name="q5-1" value="Does" data-correct="true"> Does</label></div>
+                            </div>
+                             <div class="quiz-question">
+                               <p>2. Complete the question: "___ they live here?"</p>
+                                <div class="flex gap-4"><label><input type="radio" name="q5-2" value="Do" data-correct="true"> Do</label><label><input type="radio" name="q5-2" value="Does"> Does</label></div>
+                            </div>
+                        </div>
+                        <button class="complete-lesson-btn mt-4 bg-cyan-600 text-white px-4 py-2 rounded-md hover:bg-cyan-700">Completar Lección</button>
+                        <p class="quiz-feedback"></p>
+                    </div>
+                </details>
+                <!-- Lección 6 -->
+                <details id="lesson-6" class="lesson lesson-locked bg-white p-6 rounded-lg shadow-sm group">
+                    <summary class="text-xl font-semibold text-stone-700 list-none group-hover:text-cyan-700">Episodio 6: Formando Negaciones</summary>
+                    <div class="mt-4 pt-4 border-t">
+                        <p class="text-stone-600 mt-2"><b>Explicación:</b> Para negar en Presente Simple, usamos 'don't' (do not) y 'doesn't' (does not). 'don't' para I/you/we/they. 'doesn't' para he/she/it. Estructura: <span class="font-mono bg-stone-100 px-1 rounded">Sujeto + (don't/doesn't) + verbo</span>. Ejemplo: "He doesn't like spiders."</p>
+                        <h4 class="font-semibold mt-4">Quiz de Verificación</h4>
+                        <div class="quiz mt-2 space-y-3">
+                            <div class="quiz-question">
+                               <p>1. Complete the sentence: "I ___ eat meat."</p>
+                                <div class="flex gap-4"><label><input type="radio" name="q6-1" value="don't" data-correct="true"> don't</label><label><input type="radio" name="q6-1" value="doesn't"> doesn't</label></div>
+                            </div>
+                             <div class="quiz-question">
+                               <p>2. Complete the sentence: "The cat ___ sleep all day."</p>
+                                <div class="flex gap-4"><label><input type="radio" name="q6-2" value="don't"> don't</label><label><input type="radio" name="q6-2" value="doesn't" data-correct="true"> doesn't</label></div>
+                            </div>
+                        </div>
+                        <button class="complete-lesson-btn mt-4 bg-cyan-600 text-white px-4 py-2 rounded-md hover:bg-cyan-700">Completar Lección</button>
+                        <p class="quiz-feedback"></p>
+                    </div>
+                </details>
+                <!-- Lección 7 -->
+                <details id="lesson-7" class="lesson lesson-locked bg-white p-6 rounded-lg shadow-sm group">
+                    <summary class="text-xl font-semibold text-stone-700 list-none group-hover:text-cyan-700">Episodio 7: Adjetivos Posesivos</summary>
+                     <div class="mt-4 pt-4 border-t">
+                        <p class="text-stone-600 mt-2"><b>Explicación:</b> Los usamos para indicar a quién pertenece algo. Son: <span class="font-mono bg-stone-100 px-1 rounded">my</span> (mi), <span class="font-mono bg-stone-100 px-1 rounded">your</span> (tu/su), <span class="font-mono bg-stone-100 px-1 rounded">his</span> (su, de él), <span class="font-mono bg-stone-100 px-1 rounded">her</span> (su, de ella), <span class="font-mono bg-stone-100 px-1 rounded">its</span> (su, de ello), <span class="font-mono bg-stone-100 px-1 rounded">our</span> (nuestro), <span class="font-mono bg-stone-100 px-1 rounded">their</span> (su, de ellos).</p>
+                        <h4 class="font-semibold mt-4">Quiz de Verificación</h4>
+                        <div class="quiz mt-2 space-y-3">
+                            <div class="quiz-question">
+                               <p>1. Complete the sentence: "This is ___ book." (El libro es mío)</p>
+                                <div class="flex gap-4"><label><input type="radio" name="q7-1" value="his"> his</label><label><input type="radio" name="q7-1" value="my" data-correct="true"> my</label><label><input type="radio" name="q7-1" value="her"> her</label></div>
+                            </div>
+                             <div class="quiz-question">
+                               <p>2. Complete the sentence: "That is ___ house." (La casa es de ellos)</p>
+                                <div class="flex gap-4"><label><input type="radio" name="q7-2" value="our"> our</label><label><input type="radio" name="q7-2" value="your"> your</label><label><input type="radio" name="q7-2" value="their" data-correct="true"> their</label></div>
+                            </div>
+                        </div>
+                        <button class="complete-lesson-btn mt-4 bg-cyan-600 text-white px-4 py-2 rounded-md hover:bg-cyan-700">Completar Lección</button>
+                        <p class="quiz-feedback"></p>
+                    </div>
+                </details>
+                <!-- Lección 8 -->
+                <details id="lesson-8" class="lesson lesson-locked bg-white p-6 rounded-lg shadow-sm group">
+                    <summary class="text-xl font-semibold text-stone-700 list-none group-hover:text-cyan-700">Episodio 8: Vocabulario - La Familia</summary>
+                     <div class="mt-4 pt-4 border-t">
+                        <p class="text-stone-600 mt-2"><b>Explicación:</b> Aprende los miembros básicos de la familia: <span class="font-mono bg-stone-100 px-1 rounded">mother</span> (madre), <span class="font-mono bg-stone-100 px-1 rounded">father</span> (padre), <span class="font-mono bg-stone-100 px-1 rounded">sister</span> (hermana), <span class="font-mono bg-stone-100 px-1 rounded">brother</span> (hermano), <span class="font-mono bg-stone-100 px-1 rounded">son</span> (hijo), <span class="font-mono bg-stone-100 px-1 rounded">daughter</span> (hija).</p>
+                        <h4 class="font-semibold mt-4">Quiz de Verificación</h4>
+                        <div class="quiz mt-2 space-y-3">
+                            <div class="quiz-question">
+                               <p>1. Your father's wife is your ___.</p>
+                                <div class="flex gap-4"><label><input type="radio" name="q8-1" value="sister"> sister</label><label><input type="radio" name="q8-1" value="mother" data-correct="true"> mother</label></div>
+                            </div>
+                             <div class="quiz-question">
+                               <p>2. Your mother's son is your ___.</p>
+                                <div class="flex gap-4"><label><input type="radio" name="q8-2" value="brother" data-correct="true"> brother</label><label><input type="radio" name="q8-2" value="son"> son</label></div>
+                            </div>
+                        </div>
+                        <button class="complete-lesson-btn mt-4 bg-cyan-600 text-white px-4 py-2 rounded-md hover:bg-cyan-700">Completar Lección</button>
+                        <p class="quiz-feedback"></p>
+                    </div>
+                </details>
+                 <!-- Lección 9 -->
+                <details id="lesson-9" class="lesson lesson-locked bg-white p-6 rounded-lg shadow-sm group">
+                    <summary class="text-xl font-semibold text-stone-700 list-none group-hover:text-cyan-700">Episodio 9: Vocabulario - Comida</summary>
+                     <div class="mt-4 pt-4 border-t">
+                        <p class="text-stone-600 mt-2"><b>Explicación:</b> Palabras comunes para comida: <span class="font-mono bg-stone-100 px-1 rounded">apple</span> (manzana), <span class="font-mono bg-stone-100 px-1 rounded">bread</span> (pan), <span class="font-mono bg-stone-100 px-1 rounded">cheese</span> (queso), <span class="font-mono bg-stone-100 px-1 rounded">water</span> (agua), <span class="font-mono bg-stone-100 px-1 rounded">chicken</span> (pollo).</p>
+                        <h4 class="font-semibold mt-4">Quiz de Verificación</h4>
+                        <div class="quiz mt-2 space-y-3">
+                            <div class="quiz-question">
+                               <p>1. Which one is a fruit?</p>
+                                <div class="flex gap-4"><label><input type="radio" name="q9-1" value="bread"> bread</label><label><input type="radio" name="q9-1" value="apple" data-correct="true"> apple</label></div>
+                            </div>
+                             <div class="quiz-question">
+                               <p>2. Which one do you drink?</p>
+                                <div class="flex gap-4"><label><input type="radio" name="q9-2" value="water" data-correct="true"> water</label><label><input type="radio" name="q9-2" value="cheese"> cheese</label></div>
+                            </div>
+                        </div>
+                        <button class="complete-lesson-btn mt-4 bg-cyan-600 text-white px-4 py-2 rounded-md hover:bg-cyan-700">Completar Lección</button>
+                        <p class="quiz-feedback"></p>
+                    </div>
+                </details>
+                 <!-- Lección 10 -->
+                <details id="lesson-10" class="lesson lesson-locked bg-white p-6 rounded-lg shadow-sm group">
+                    <summary class="text-xl font-semibold text-stone-700 list-none group-hover:text-cyan-700">Episodio 10: Vocabulario - Días y Meses</summary>
+                     <div class="mt-4 pt-4 border-t">
+                        <p class="text-stone-600 mt-2"><b>Explicación:</b> Días de la semana: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday. Meses: January, February, March, April, May...</p>
+                        <h4 class="font-semibold mt-4">Quiz de Verificación</h4>
+                        <div class="quiz mt-2 space-y-3">
+                            <div class="quiz-question">
+                               <p>1. What is the day after Monday?</p>
+                                <div class="flex gap-4"><label><input type="radio" name="q10-1" value="Sunday"> Sunday</label><label><input type="radio" name="q10-1" value="Tuesday" data-correct="true"> Tuesday</label></div>
+                            </div>
+                             <div class="quiz-question">
+                               <p>2. What is the first month of the year?</p>
+                                <div class="flex gap-4"><label><input type="radio" name="q10-2" value="January" data-correct="true"> January</label><label><input type="radio" name="q10-2" value="March"> March</label></div>
+                            </div>
+                        </div>
+                        <button class="complete-lesson-btn mt-4 bg-cyan-600 text-white px-4 py-2 rounded-md hover:bg-cyan-700">Completar Lección</button>
+                        <p class="quiz-feedback"></p>
+                    </div>
+                </details>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vista del Tutor IA -->
+    <div id="tutor-view" class="hidden min-h-screen bg-stone-50 p-4 flex items-center justify-center">
+        <div class="w-full max-w-2xl mx-auto">
+            <button class="back-to-dashboard mb-4 bg-white border border-stone-300 py-2 px-4 rounded-full hover:bg-stone-100 transition-colors">&larr; Volver al Inicio</button>
+            <div class="bg-white rounded-lg shadow-lg border">
+                <div class="p-4 border-b text-center">
+                     <h2 class="text-2xl font-semibold text-center mb-1">Tutor de Conversación IA</h2>
+                     <p class="text-stone-600 text-center text-sm">Practica con texto o voz. El tutor te dará una traducción y audio.</p>
+                </div>
+                <div id="chat-window" class="p-4 space-y-4 flex flex-col chat-window">
+                    <div class="flex items-start gap-3">
+                        <span class="flex-shrink-0 inline-flex items-center justify-center h-10 w-10 rounded-full bg-cyan-100 text-cyan-700 font-bold">AI</span>
+                        <div class="relative bg-stone-100 p-3 rounded-lg rounded-tl-none max-w-xs group">
+                            <p class="text-sm">Hello! Let's practice. What's your name?</p>
+                            <p class="text-xs text-stone-500 italic mt-2 pt-2 border-t border-stone-200">¡Hola! Vamos a practicar. ¿Cómo te llamas?</p>
+                            <button class="speak-btn absolute -top-2 -right-2 w-7 h-7 bg-white rounded-full shadow border flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" data-text="Hello! Let's practice. What's your name?">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-cyan-600" viewBox="0 0 20 20" fill="currentColor">
+                                  <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 border-t flex items-center gap-2">
+                    <input type="text" id="chat-input" placeholder="Escribe o usa el micrófono..." class="w-full px-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-cyan-500">
+                    <button id="mic-btn" class="bg-stone-500 text-white rounded-full p-3 hover:bg-stone-600 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
+                    </button>
+                    <button id="chat-send" class="bg-cyan-600 text-white rounded-full p-3 hover:bg-cyan-700 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.428A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" /></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        // Use the globally provided Firebase config
+        const firebaseConfig = typeof __firebase_config !== 'undefined'
+            ? JSON.parse(__firebase_config)
+            : { apiKey: "FALLBACK_KEY", authDomain: "FALLBACK_DOMAIN", projectId: "FALLBACK_PROJECT_ID" };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        const initializeAuth = async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                    console.log("Authenticated with custom token.");
+                } else {
+                    await signInAnonymously(auth);
+                    console.log("Authenticated anonymously.");
+                }
+            } catch (error) {
+                console.error("Firebase initial authentication failed:", error);
+                const authError = document.getElementById('auth-error');
+                if (authError) {
+                    authError.textContent = "La conexión con el servidor de autenticación ha fallado.";
+                    authError.classList.remove('hidden');
+                }
+            }
+        };
+
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await initializeAuth();
+
+            const registrationView = document.getElementById('registration-view');
+            const dashboardView = document.getElementById('dashboard-view');
+            const lessonsView = document.getElementById('lessons-view');
+            const tutorView = document.getElementById('tutor-view');
+
+            const registrationForm = document.getElementById('registration-form');
+            const googleSignInBtn = document.getElementById('google-signin-btn');
+            const welcomeMessage = document.getElementById('welcome-message');
+            const authError = document.getElementById('auth-error');
+            
+            const goToLessonsBtn = document.getElementById('go-to-lessons');
+            const goToTutorBtn = document.getElementById('go-to-tutor');
+            const backButtons = document.querySelectorAll('.back-to-dashboard');
+
+            const showView = (viewToShow) => {
+                registrationView.classList.add('hidden');
+                dashboardView.classList.add('hidden');
+                lessonsView.classList.add('hidden');
+                tutorView.classList.add('hidden');
+                viewToShow.classList.remove('hidden');
+                window.scrollTo(0, 0);
+            };
+
+            const userLogin = (userName) => {
+                 if (userName) {
+                    const firstName = userName.split(' ')[0];
+                    welcomeMessage.textContent = `¡Hola, ${firstName}!`;
+                    showView(dashboardView);
+                }
+            }
+
+            registrationForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                userLogin(document.getElementById('first-name').value);
+            });
+
+            googleSignInBtn.addEventListener('click', () => {
+                authError.classList.add('hidden');
+                signInWithPopup(auth, provider)
+                    .then((result) => {
+                        const user = result.user;
+                        userLogin(user.displayName);
+                    }).catch((error) => {
+                        console.error("Error durante el inicio de sesión con Google:", error);
+                        if (error.code === 'auth/unauthorized-domain') {
+                             authError.textContent = "Error: El dominio de esta página no está autorizado. Por favor, añádelo a los dominios autorizados en tu consola de Firebase.";
+                        } else if (error.code === 'auth/popup-blocked' || error.code === 'auth/cancelled-popup-request') {
+                             authError.textContent = "La ventana de inicio de sesión fue bloqueada o cerrada. Por favor, habilita las ventanas emergentes e inténtalo de nuevo.";
+                        } else {
+                             authError.textContent = "No se pudo iniciar sesión con Google. Por favor, inténtalo de nuevo.";
+                        }
+                        authError.classList.remove('hidden');
+                    });
+            });
+
+            goToLessonsBtn.addEventListener('click', () => showView(lessonsView));
+            goToTutorBtn.addEventListener('click', () => showView(tutorView));
+            backButtons.forEach(btn => {
+                btn.addEventListener('click', () => showView(dashboardView));
+            });
+            
+            const speak = (text) => {
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = 'en-US';
+                    window.speechSynthesis.speak(utterance);
+                } else {
+                     console.warn('Tu navegador no soporta la síntesis de voz.');
+                }
+            };
+
+            const initChat = () => {
+                const chatWindow = document.getElementById('chat-window');
+                const chatInput = document.getElementById('chat-input');
+                const sendButton = document.getElementById('chat-send');
+                const micButton = document.getElementById('mic-btn');
+
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                let recognition;
+
+                if (SpeechRecognition) {
+                    recognition = new SpeechRecognition();
+                    recognition.lang = 'en-US';
+                    recognition.interimResults = false;
+
+                    micButton.addEventListener('click', () => {
+                        if (micButton.classList.contains('is-listening')) {
+                            recognition.stop();
+                        } else {
+                            recognition.start();
+                        }
+                    });
+                    
+                    recognition.addEventListener('start', () => micButton.classList.add('is-listening'));
+                    recognition.addEventListener('end', () => micButton.classList.remove('is-listening'));
+
+                    recognition.addEventListener('result', (event) => {
+                        const transcript = event.results[0][0].transcript;
+                        chatInput.value = transcript;
+                        setTimeout(sendMessage, 300);
+                    });
+                } else {
+                    if(micButton) micButton.style.display = 'none';
+                }
+
+                const sendMessage = () => {
+                    const messageText = chatInput.value.trim();
+                    if (messageText === '') return;
+
+                    const userMessage = document.createElement('div');
+                    userMessage.classList.add('flex', 'justify-end');
+                    userMessage.innerHTML = `
+                        <div class="bg-cyan-600 text-white p-3 rounded-lg rounded-br-none max-w-xs">
+                            <p class="text-sm">${messageText}</p>
+                        </div>
+                    `;
+                    chatWindow.appendChild(userMessage);
+                    chatInput.value = '';
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
+
+                    setTimeout(() => simulateAiResponse(messageText.toLowerCase()), 1200);
+                };
+
+                const simulateAiResponse = (userText) => {
+                    let responses = {
+                        english: "That's an interesting point. Can you explain more?",
+                        spanish: "Es un punto interesante. ¿Puedes explicarlo mejor?"
+                    };
+
+                    if (userText.includes('hello') || userText.includes('hi')) {
+                        responses = {
+                            english: "Hi there! It's great to practice with you. What would you like to talk about today?",
+                            spanish: "¡Hola! Me alegra practicar contigo. ¿De qué te gustaría hablar hoy?"
+                        };
+                    } else if (userText.includes('my name is')) {
+                        const name = userText.split('my name is')[1].trim();
+                        responses = {
+                            english: `Nice to meet you, ${name}! My name is Lingo.`,
+                            spanish: `¡Encantado de conocerte, ${name}! Mi nombre es Lingo.`
+                        }
+                    } else if (userText.includes('how are you')) {
+                        responses = {
+                            english: "I'm doing great, thanks for asking! I'm ready to help you learn. How are you?",
+                            spanish: "Estoy muy bien, ¡gracias por preguntar! Listo para ayudarte a aprender. ¿Tú cómo estás?"
+                        };
+                    } else if (userText.includes('weather')) {
+                        responses = {
+                            english: "It's always a good day for learning English! What's the weather like where you are?",
+                            spanish: "¡Siempre es un buen día para aprender inglés! ¿Cómo está el tiempo donde tú te encuentras?"
+                        };
+                    } else if (userText.includes('bye')) {
+                         responses = {
+                            english: "Goodbye! It was great practicing with you. See you next time!",
+                            spanish: "¡Adiós! Fue genial practicar contigo. ¡Nos vemos la próxima vez!"
+                        };
+                    }
+
+                    const aiMessage = document.createElement('div');
+                    aiMessage.classList.add('flex', 'items-start', 'gap-3');
+                    aiMessage.innerHTML = `
+                        <span class="flex-shrink-0 inline-flex items-center justify-center h-10 w-10 rounded-full bg-cyan-100 text-cyan-700 font-bold">AI</span>
+                        <div class="relative bg-stone-100 p-3 rounded-lg rounded-tl-none max-w-xs group">
+                            <p class="text-sm">${responses.english}</p>
+                            <p class="text-xs text-stone-500 italic mt-2 pt-2 border-t border-stone-200">${responses.spanish}</p>
+                            <button class="speak-btn absolute -top-2 -right-2 w-7 h-7 bg-white rounded-full shadow border flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" data-text="${responses.english.replace(/"/g, '&quot;')}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-cyan-600" viewBox="0 0 20 20" fill="currentColor">
+                                  <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" />
+                                </svg>
+                            </button>
+                        </div>
+                    `;
+                    chatWindow.appendChild(aiMessage);
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
+                    speak(responses.english);
+                };
+                
+                chatWindow.addEventListener('click', function(e) {
+                    const speakButton = e.target.closest('.speak-btn');
+                    if(speakButton) {
+                        speak(speakButton.dataset.text);
+                    }
+                });
+
+                sendButton.addEventListener('click', sendMessage);
+                chatInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        sendMessage();
+                    }
+                });
+            };
+            
+            const initLessons = () => {
+                const completeButtons = document.querySelectorAll('.complete-lesson-btn');
+                completeButtons.forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const lessonElement = e.target.closest('.lesson');
+                        const quiz = lessonElement.querySelector('.quiz');
+                        const feedback = lessonElement.querySelector('.quiz-feedback');
+                        const questions = quiz.querySelectorAll('.quiz-question');
+                        let allCorrect = true;
+
+                        questions.forEach(q => {
+                            const correctAnswer = q.querySelector('input[data-correct="true"]');
+                            if (!correctAnswer.checked) {
+                                allCorrect = false;
+                            }
+                        });
+
+                        feedback.style.display = 'block';
+                        if (allCorrect) {
+                            feedback.textContent = '¡Excelente! Has desbloqueado la siguiente lección.';
+                            feedback.className = 'quiz-feedback correct';
+                            lessonElement.classList.remove('lesson-locked');
+                            lessonElement.classList.add('lesson-completed');
+                            lessonElement.querySelector('summary').click(); // Close current lesson
+
+                            const lessonId = parseInt(lessonElement.id.split('-')[1]);
+                            const nextLesson = document.getElementById(`lesson-${lessonId + 1}`);
+                            if (nextLesson) {
+                                nextLesson.classList.remove('lesson-locked');
+                            }
+                            
+                            button.disabled = true;
+                            button.style.backgroundColor = '#9ca3af';
+
+                        } else {
+                            feedback.textContent = 'Algunas respuestas son incorrectas. ¡Inténtalo de nuevo!';
+                            feedback.className = 'quiz-feedback incorrect';
+                        }
+                    });
+                });
+            };
+
+            initChat();
+            initLessons();
+        });
+    </script>
+</body>
+</html>
+
