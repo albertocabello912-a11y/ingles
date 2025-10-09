@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>English A.C</title>
+    <title>Full English</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,21 +29,6 @@
         .is-listening {
             background-color: #ef4444 !important;
         }
-        .lesson-locked {
-            opacity: 0.6;
-            pointer-events: none;
-        }
-        .lesson-locked summary::after {
-            content: '🔒';
-            margin-left: 10px;
-        }
-        .lesson-completed summary {
-            color: #16a34a; /* green-600 */
-        }
-         .lesson-completed summary::after {
-            content: '✔️';
-            margin-left: 10px;
-        }
         .quiz-feedback {
             display: none;
             font-size: 0.875rem;
@@ -67,6 +52,27 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        /* Animaciones */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .chat-message-enter {
+            animation: fadeInUp 0.3s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .view-enter {
+            animation: fadeIn 0.3s ease-in-out;
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -75,8 +81,8 @@
     <div id="dashboard-view">
         <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-40 shadow-sm">
             <nav class="container mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
-                <h1 class="text-xl sm:text-2xl font-bold text-blue-700">English A.C</h1>
-                <div id="welcome-message" class="text-slate-700 font-semibold text-sm sm:text-base"></div>
+                <h1 class="text-xl sm:text-2xl font-bold text-blue-700">Full English</h1>
+                <div id="welcome-message" class="text-slate-700 font-semibold text-sm sm:text-base">¡Bienvenido!</div>
             </nav>
         </header>
         <main class="container mx-auto p-4 sm:p-6">
@@ -86,98 +92,59 @@
                     <p class="mt-2 text-slate-600 max-w-2xl mx-auto">Elige una actividad para empezar a mejorar tu inglés.</p>
                 </div>
                 <div class="grid md:grid-cols-2 gap-6 sm:gap-8 max-w-5xl mx-auto">
-                    <div class="bg-white p-6 sm:p-8 rounded-lg shadow-lg hover:shadow-xl transition-shadow flex flex-col">
+                    <div class="bg-white p-6 sm:p-8 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex flex-col">
                         <h3 class="text-xl sm:text-2xl font-bold mb-4 text-blue-800">📝 Clases Interactivas</h3>
                         <p class="text-slate-600 mb-6 flex-grow">Aprende gramática y vocabulario con lecciones y ejercicios para reforzar tu conocimiento.</p>
-                        <button id="go-to-lessons" class="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-transform transform hover:scale-105 mt-auto">Empezar Lecciones</button>
+                        <button id="go-to-lessons-list" class="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-transform transform hover:scale-105 mt-auto">Empezar Lecciones</button>
                     </div>
-                    <div class="bg-white p-6 sm:p-8 rounded-lg shadow-lg hover:shadow-xl transition-shadow flex flex-col">
+                    <div class="bg-white p-6 sm:p-8 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex flex-col">
                         <h3 class="text-xl sm:text-2xl font-bold mb-4 text-blue-800">🤖 Chat con Tutor IA ✨</h3>
                         <p class="text-slate-600 mb-6 flex-grow">Conversa sobre cualquier tema, practica escenarios reales y resuelve tus dudas con un tutor IA avanzado.</p>
                         <button id="go-to-tutor" class="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-transform transform hover:scale-105 mt-auto">Practicar Conversación</button>
                     </div>
                 </div>
             </section>
-            <section id="tips" class="py-8 sm:py-12">
-                <div class="max-w-5xl mx-auto bg-white p-6 sm:p-8 rounded-lg shadow-lg">
-                     <h3 class="text-2xl sm:text-3xl font-bold text-center mb-8 text-slate-800">Cómo Mejorar tu Aprendizaje</h3>
-                     <div class="grid sm:grid-cols-3 gap-8 text-center">
-                        <div class="mb-6 sm:mb-0">
-                            <span class="text-4xl">🗓️</span>
-                            <h4 class="font-semibold text-lg my-2">Practica Diariamente</h4>
-                            <p class="text-slate-600 text-sm">La consistencia es clave. Dedica al menos 15 minutos cada día.</p>
-                        </div>
-                        <div class="mb-6 sm:mb-0">
-                            <span class="text-4xl">🗣️</span>
-                            <h4 class="font-semibold text-lg my-2">Habla sin Miedo</h4>
-                            <p class="text-slate-600 text-sm">Usa la función de voz del chat. Cometer errores es parte del proceso.</p>
-                        </div>
-                        <div>
-                            <span class="text-4xl">✍️</span>
-                            <h4 class="font-semibold text-lg my-2">Repite y Revisa</h4>
-                            <p class="text-slate-600 text-sm">Vuelve a las lecciones pasadas para mejorar tu comprensión.</p>
-                        </div>
-                     </div>
-                </div>
-            </section>
         </main>
+        <footer class="text-center py-8 text-slate-500 text-sm">
+            <p>Creado por Alberto Cabello</p>
+        </footer>
     </div>
 
-    <!-- Vista de Lecciones -->
-    <div id="lessons-view" class="hidden min-h-screen bg-green-50 p-4 sm:p-6 md:p-12">
+    <!-- Vista de Lista de Lecciones -->
+    <div id="lessons-list-view" class="hidden min-h-screen bg-green-50 p-4 sm:p-6 md:p-12 view-enter">
         <div class="max-w-4xl mx-auto">
             <button class="back-to-dashboard mb-6 sm:mb-8 bg-white border border-slate-300 py-2 px-4 rounded-full hover:bg-slate-100 transition-colors">&larr; Volver al Inicio</button>
-            <h2 class="text-2xl sm:text-3xl font-bold text-slate-800 mb-2">Ruta de Aprendizaje</h2>
-            <p class="text-slate-600 mb-8">Completa cada lección y su quiz para desbloquear la siguiente.</p>
-            <div id="lessons-container" class="space-y-4">
-                <!-- Lesson content remains the same -->
-                 <details id="lesson-1" class="lesson bg-white p-4 sm:p-6 rounded-lg shadow-sm group">
-                    <summary class="text-lg sm:text-xl font-semibold text-slate-700 list-none group-hover:text-blue-700">Episodio 1: El Verbo 'To Be'</summary>
-                    <div class="mt-4 pt-4 border-t">
-                        <p class="text-slate-600 mt-2"><b>Explicación:</b> El verbo 'To Be' (Ser/Estar) es fundamental. Se usa para descripciones, estados y localizaciones. Formas: <span class="font-mono bg-slate-100 px-1 rounded">am</span> (I), <span class="font-mono bg-slate-100 px-1 rounded">is</span> (he/she/it), <span class="font-mono bg-slate-100 px-1 rounded">are</span> (you/we/they).</p>
-                        <h4 class="font-semibold mt-4">Quiz de Verificación</h4>
-                        <div class="quiz mt-2 space-y-3">
-                            <div class="quiz-question">
-                                <p>1. Which form is correct? "They ___ happy."</p>
-                                <div class="flex gap-4"><label><input type="radio" name="q1-1" value="is"> is</label><label><input type="radio" name="q1-1" value="are" data-correct="true"> are</label><label><input type="radio" name="q1-1" value="am"> am</label></div>
-                            </div>
-                            <div class="quiz-question">
-                                <p>2. Which form is correct? "He ___ a student."</p>
-                                <div class="flex gap-4"><label><input type="radio" name="q1-2" value="is" data-correct="true"> is</label><label><input type="radio" name="q1-2" value="are"> are</label><label><input type="radio" name="q1-2" value="am"> am</label></div>
-                            </div>
-                        </div>
-                        <button class="complete-lesson-btn mt-4 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">Completar Lección</button>
-                        <p class="quiz-feedback"></p>
-                    </div>
-                </details>
-                <!-- Lecciones 2-22 -->
-                <div id="lesson-2" class="lesson lesson-locked bg-white p-4 sm:p-6 rounded-lg shadow-sm group"><details><summary class="text-lg sm:text-xl font-semibold text-slate-700 list-none group-hover:text-blue-700">Episodio 2: El Verbo 'To Have'</summary><div class="mt-4 pt-4 border-t"><p class="text-slate-600 mt-2"><b>Explicación:</b> 'To Have' (Tener) indica posesión. Formas: <span class="font-mono bg-slate-100 px-1 rounded">have</span> (I/you/we/they) y <span class="font-mono bg-slate-100 px-1 rounded">has</span> (he/she/it).</p><h4 class="font-semibold mt-4">Quiz de Verificación</h4><div class="quiz mt-2 space-y-3"><div class="quiz-question"><p>1. "She ___ a cat."</p><div class="flex gap-4"><label><input type="radio" name="q2-1" value="have"> have</label><label><input type="radio" name="q2-1" value="has" data-correct="true"> has</label></div></div><div class="quiz-question"><p>2. "We ___ a house."</p><div class="flex gap-4"><label><input type="radio" name="q2-2" value="have" data-correct="true"> have</label><label><input type="radio" name="q2-2" value="has"> has</label></div></div></div><button class="complete-lesson-btn mt-4 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">Completar Lección</button><p class="quiz-feedback"></p></div></details></div>
-                <div id="lesson-3" class="lesson lesson-locked bg-white p-4 sm:p-6 rounded-lg shadow-sm group"><details><summary class="text-lg sm:text-xl font-semibold text-slate-700 list-none group-hover:text-blue-700">Episodio 3: Artículos 'A/An/The'</summary><div class="mt-4 pt-4 border-t"><p class="text-slate-600 mt-2"><b>Explicación:</b> 'A/An' para algo no específico. 'An' antes de vocal. 'The' para algo específico.</p><h4 class="font-semibold mt-4">Quiz de Verificación</h4><div class="quiz mt-2 space-y-3"><div class="quiz-question"><p>1. "I see ___ bird."</p><div class="flex gap-4"><label><input type="radio" name="q3-1" value="a" data-correct="true"> a</label><label><input type="radio" name="q3-1" value="an"> an</label></div></div><div class="quiz-question"><p>2. "She has ___ idea."</p><div class="flex gap-4"><label><input type="radio" name="q3-2" value="a"> a</label><label><input type="radio" name="q3-2" value="an" data-correct="true"> an</label></div></div></div><button class="complete-lesson-btn mt-4 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">Completar Lección</button><p class="quiz-feedback"></p></div></details></div>
-                <div id="lesson-4" class="lesson lesson-locked bg-white p-4 sm:p-6 rounded-lg shadow-sm group"><details><summary class="text-lg sm:text-xl font-semibold text-slate-700 list-none group-hover:text-blue-700">Episodio 4: Presente Simple</summary><div class="mt-4 pt-4 border-t"><p class="text-slate-600 mt-2"><b>Explicación:</b> Para hábitos y rutinas. Añade -s para he/she/it.</p><h4 class="font-semibold mt-4">Quiz</h4><div class="quiz mt-2 space-y-3"><div class="quiz-question"><p>1. "He ___ (read) books."</p><div class="flex gap-4"><label><input type="radio" name="q4-1" value="reads" data-correct="true"> reads</label><label><input type="radio" name="q4-1" value="read"> read</label></div></div></div><button class="complete-lesson-btn mt-4 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">Completar</button><p class="quiz-feedback"></p></div></details></div>
-                <div id="lesson-5" class="lesson lesson-locked bg-white p-4 sm:p-6 rounded-lg shadow-sm group"><details><summary class="text-lg sm:text-xl font-semibold text-slate-700 list-none group-hover:text-blue-700">Episodio 5: Formando Preguntas</summary><div class="mt-4 pt-4 border-t"><p>Usa 'Do' o 'Does' para preguntar en presente.</p><h4 class="font-semibold mt-4">Quiz</h4><div class="quiz mt-2 space-y-3"><div class="quiz-question"><p>1. "___ she work here?"</p><div class="flex gap-4"><label><input type="radio" name="q5-1" value="Do"> Do</label><label><input type="radio" name="q5-1" value="Does" data-correct="true"> Does</label></div></div></div><button class="complete-lesson-btn mt-4 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">Completar</button><p class="quiz-feedback"></p></div></details></div>
-                <div id="lesson-6" class="lesson lesson-locked bg-white p-4 sm:p-6 rounded-lg shadow-sm group"><details><summary class="text-lg sm:text-xl font-semibold text-slate-700">Episodio 6: Negaciones</summary></details></div>
-                <div id="lesson-7" class="lesson lesson-locked bg-white p-4 sm:p-6 rounded-lg shadow-sm group"><details><summary class="text-lg sm:text-xl font-semibold text-slate-700">Episodio 7: Adjetivos Posesivos</summary></details></div>
-                <div id="lesson-8" class="lesson lesson-locked bg-white p-4 sm:p-6 rounded-lg shadow-sm group"><details><summary class="text-lg sm:text-xl font-semibold text-slate-700">Episodio 8: Vocabulario - Familia</summary></details></div>
-                <div id="lesson-9" class="lesson lesson-locked bg-white p-4 sm:p-6 rounded-lg shadow-sm group"><details><summary class="text-lg sm:text-xl font-semibold text-slate-700">Episodio 9: Vocabulario - Comida</summary></details></div>
-                <div id="lesson-10" class="lesson lesson-locked bg-white p-4 sm:p-6 rounded-lg shadow-sm group"><details><summary class="text-lg sm:text-xl font-semibold text-slate-700">Episodio 10: Vocabulario - Días y Meses</summary></details></div>
-                <div id="lesson-11" class="lesson lesson-locked bg-white p-4 sm:p-6 rounded-lg shadow-sm group"><details><summary class="text-lg sm:text-xl font-semibold text-slate-700">Episodio 11: Plurales</summary></details></div>
-                <div id="lesson-12" class="lesson lesson-locked bg-white p-4 sm:p-6 rounded-lg shadow-sm group"><details><summary class="text-lg sm:text-xl font-semibold text-slate-700">Episodio 12: Preposiciones de Lugar</summary></details></div>
-                <div id="lesson-13" class="lesson lesson-locked bg-white p-4 sm:p-6 rounded-lg shadow-sm group"><details><summary class="text-lg sm:text-xl font-semibold text-slate-700">Episodio 13: Presente Continuo</summary></details></div>
-                <div id="lesson-14" class="lesson lesson-locked bg-white p-4 sm:p-6 rounded-lg shadow-sm group"><details><summary class="text-lg sm:text-xl font-semibold text-slate-700">Episodio 14: Pasado Simple (was/were)</summary></details></div>
-                <div id="lesson-15" class="lesson lesson-locked bg-white p-4 sm:p-6 rounded-lg shadow-sm group"><details><summary class="text-lg sm:text-xl font-semibold text-slate-700">Episodio 15: Pasado Simple (Verbos Regulares)</summary></details></div>
-                <div id="lesson-16" class="lesson lesson-locked bg-white p-4 sm:p-6 rounded-lg shadow-sm group"><details><summary class="text-lg sm:text-xl font-semibold text-slate-700">Episodio 16: Pasado Simple (Verbos Irregulares)</summary></details></div>
-                <div id="lesson-17" class="lesson lesson-locked bg-white p-4 sm:p-6 rounded-lg shadow-sm group"><details><summary class="text-lg sm:text-xl font-semibold text-slate-700">Episodio 17: Vocabulario - Ropa</summary></details></div>
-                <div id="lesson-18" class="lesson lesson-locked bg-white p-4 sm:p-6 rounded-lg shadow-sm group"><details><summary class="text-lg sm:text-xl font-semibold text-slate-700">Episodio 18: Preguntas en Pasado (Did)</summary></details></div>
-                <div id="lesson-19" class="lesson lesson-locked bg-white p-4 sm:p-6 rounded-lg shadow-sm group"><details><summary class="text-lg sm:text-xl font-semibold text-slate-700">Episodio 19: Negaciones en Pasado (didn't)</summary></details></div>
-                <div id="lesson-20" class="lesson lesson-locked bg-white p-4 sm:p-6 rounded-lg shadow-sm group"><details><summary class="text-lg sm:text-xl font-semibold text-slate-700">Episodio 20: Vocabulario - El Clima</summary></details></div>
-                <div id="lesson-21" class="lesson lesson-locked bg-white p-4 sm:p-6 rounded-lg shadow-sm group"><details><summary class="text-lg sm:text-xl font-semibold text-slate-700">Episodio 21: 'There is' / 'There are'</summary></details></div>
-                <div id="lesson-22" class="lesson lesson-locked bg-white p-4 sm:p-6 rounded-lg shadow-sm group"><details><summary class="text-lg sm:text-xl font-semibold text-slate-700">Episodio 22: Futuro Simple (will)</summary></details></div>
+            <h2 class="text-2xl sm:text-3xl font-bold text-slate-800 mb-2">Lista de Lecciones</h2>
+            <p class="text-slate-600 mb-8">Elige una lección para empezar a estudiar.</p>
+            <div id="lessons-container" class="space-y-2">
+                <!-- Los botones de lección se generarán aquí -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Vista de Lección Individual -->
+    <div id="single-lesson-view" class="hidden min-h-screen bg-green-50 p-4 sm:p-6 md:p-12 view-enter">
+        <div class="max-w-4xl mx-auto">
+             <button id="back-to-lessons-list" class="mb-6 sm:mb-8 bg-white border border-slate-300 py-2 px-4 rounded-full hover:bg-slate-100 transition-colors">&larr; Volver a Lecciones</button>
+            <div class="bg-white p-6 sm:p-10 rounded-lg shadow-lg">
+                <div id="lesson-content-view">
+                    <h2 id="lesson-title-view" class="text-2xl sm:text-3xl font-bold text-slate-800 mb-6 border-b pb-4"></h2>
+                    <div id="lesson-explanation-view" class="prose max-w-none"></div>
+                    <button id="start-quiz-btn" class="w-full mt-8 bg-green-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-700 transition-transform transform hover:scale-105">Empezar Examen</button>
+                </div>
+                <div id="lesson-quiz-view" class="hidden">
+                     <h2 id="quiz-title-view" class="text-2xl sm:text-3xl font-bold text-slate-800 mb-6 border-b pb-4"></h2>
+                     <div id="quiz-questions-container" class="space-y-6"></div>
+                     <button id="check-quiz-btn" class="w-full mt-8 bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-transform transform hover:scale-105">Verificar Examen</button>
+                     <div id="quiz-results-view" class="hidden mt-6 text-center"></div>
+                </div>
             </div>
         </div>
     </div>
 
+
     <!-- Vista del Tutor IA -->
-    <div id="tutor-view" class="hidden min-h-screen bg-green-50 p-4 flex flex-col">
+    <div id="tutor-view" class="hidden min-h-screen bg-green-50 p-4 flex flex-col view-enter">
         <div class="w-full max-w-2xl mx-auto flex-shrink-0">
              <button class="back-to-dashboard mb-4 bg-white border border-slate-300 py-2 px-4 rounded-full hover:bg-slate-100 transition-colors">&larr; Volver al Inicio</button>
         </div>
@@ -188,64 +155,93 @@
                      <p class="text-slate-600 text-center text-sm">Practica con texto o voz.</p>
                 </div>
                 <div id="role-play-buttons" class="p-2 flex flex-wrap justify-center gap-2 border-b bg-slate-50">
-                    <button class="role-play-btn text-xs bg-blue-100 text-blue-800 py-1 px-3 rounded-full hover:bg-blue-200">✨ Ordering Coffee</button>
-                    <button class="role-play-btn text-xs bg-green-100 text-green-800 py-1 px-3 rounded-full hover:bg-green-200">✨ Job Interview</button>
-                    <button class="role-play-btn text-xs bg-yellow-100 text-yellow-800 py-1 px-3 rounded-full hover:bg-yellow-200">✨ Meeting a new person</button>
+                    <button class="role-play-btn text-xs bg-blue-100 text-blue-800 py-1 px-3 rounded-full hover:bg-blue-200 transition-colors">✨ Ordering Coffee</button>
+                    <button class="role-play-btn text-xs bg-green-100 text-green-800 py-1 px-3 rounded-full hover:bg-green-200 transition-colors">✨ Job Interview</button>
+                    <button class="role-play-btn text-xs bg-yellow-100 text-yellow-800 py-1 px-3 rounded-full hover:bg-yellow-200 transition-colors">✨ Meeting a new person</button>
                 </div>
                 <div id="chat-window" class="p-4 space-y-4 flex flex-col flex-grow overflow-y-auto">
-                    <!-- Initial AI message is now dynamic -->
+                    <!-- Chat messages will be appended here -->
                 </div>
                 <div class="p-4 border-t flex items-center gap-2">
                     <input type="text" id="chat-input" placeholder="Escribe o usa el micrófono..." class="w-full px-4 py-3 border rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <button id="mic-btn" class="bg-slate-500 text-white rounded-full p-3 hover:bg-slate-600 transition-colors flex-shrink-0">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
                     </button>
-                    <button id="chat-send" class="bg-blue-600 text-white rounded-full p-3 hover:bg-blue-700 transition-colors flex-shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.428A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" /></svg>
-                    </button>
+                    <button id="chat-send" class="bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-transform transform hover:scale-105">Enviar</button>
                 </div>
             </div>
         </div>
     </div>
     
-    <!-- Registration Modal -->
-    <div id="registration-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-        <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg text-center max-w-md w-full relative">
-            <button id="close-modal-btn" class="absolute top-2 right-2 text-slate-500 hover:text-slate-800">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-            <h1 class="text-2xl sm:text-3xl font-bold text-blue-700 mb-2">Crea tu Cuenta para Empezar</h1>
-            <p class="text-slate-600 mb-8">Es rápido y solo necesitas hacerlo una vez.</p>
-            <form id="modal-registration-form" class="space-y-4">
-                <input type="text" id="modal-first-name" placeholder="Tu Nombre" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                <div>
-                    <input type="email" id="modal-email" placeholder="Correo Electrónico" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                    <p id="modal-email-error" class="text-red-500 text-sm text-left mt-1 hidden"></p>
-                </div>
-                <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-transform transform hover:scale-105">Guardar y Continuar</button>
-            </form>
-        </div>
-    </div>
-
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // VIEWS
             const dashboardView = document.getElementById('dashboard-view');
-            const lessonsView = document.getElementById('lessons-view');
+            const lessonsListView = document.getElementById('lessons-list-view');
+            const singleLessonView = document.getElementById('single-lesson-view');
             const tutorView = document.getElementById('tutor-view');
-            const registrationModal = document.getElementById('registration-modal');
-            const closeModalBtn = document.getElementById('close-modal-btn');
-            const modalRegistrationForm = document.getElementById('modal-registration-form');
 
-            const welcomeMessage = document.getElementById('welcome-message');
-            const goToLessonsBtn = document.getElementById('go-to-lessons');
+            // BUTTONS
+            const goToLessonsListBtn = document.getElementById('go-to-lessons-list');
             const goToTutorBtn = document.getElementById('go-to-tutor');
             const backButtons = document.querySelectorAll('.back-to-dashboard');
+            const backToLessonsListBtn = document.getElementById('back-to-lessons-list');
+            const startQuizBtn = document.getElementById('start-quiz-btn');
+            const checkQuizBtn = document.getElementById('check-quiz-btn');
             
-            let lessonProgress = [];
-            let targetViewAfterRegistration = null;
+            // CONTAINERS
+            const lessonsContainer = document.getElementById('lessons-container');
+            const lessonContentView = document.getElementById('lesson-content-view');
+            const lessonQuizView = document.getElementById('lesson-quiz-view');
+            const lessonTitleView = document.getElementById('lesson-title-view');
+            const lessonExplanationView = document.getElementById('lesson-explanation-view');
+            const quizTitleView = document.getElementById('quiz-title-view');
+            const quizQuestionsContainer = document.getElementById('quiz-questions-container');
+            const quizResultsView = document.getElementById('quiz-results-view');
+            
             let chatHistory = [];
+            
+            // DATA
+            const lessonsData = [
+                { id: 1, title: "Cómo Establecer Metas Efectivas", explanation: "<p>Para aprender inglés, es clave tener metas claras. Usa el método <b>SMART</b>:</p><ul class='list-disc list-inside'><li><b>S</b>pecific (Específico): No digas 'quiero aprender inglés', di 'quiero aprender 10 verbos nuevos esta semana'.</li><li><b>M</b>easurable (Medible): ¿Cómo sabrás que lo lograste? 'Podré usar los 10 verbos en una oración'.</li><li><b>A</b>chievable (Alcanzable): ¿Es realista? Empezar con 10 verbos es mejor que 100.</li><li><b>R</b>elevant (Relevante): ¿Te ayuda a tu objetivo final?</li><li><b>T</b>ime-bound (Con Límite de Tiempo): Pon una fecha, 'en una semana'.</li></ul>", quiz: [{type: 'mcq', question: "¿Cuál es una meta SMART?", options: ["Aprender inglés rápido", "Aprender 20 palabras de vocabulario para el viernes", "Ser el mejor en inglés"], answer: "Aprender 20 palabras de vocabulario para el viernes"}] },
+                { id: 2, title: "Técnicas para Memorizar Vocabulario", explanation: "<p>No solo leas listas de palabras. Para que se queden en tu memoria:</p><ul class='list-disc list-inside'><li><b>Flashcards (Tarjetas):</b> Escribe la palabra en inglés de un lado y su significado o un dibujo del otro.</li><li><b>Contexto:</b> Aprende la palabra en una frase. En lugar de 'apple', aprende 'I eat an apple'.</li><li><b>Asociación:</b> Asocia la palabra nueva con algo que ya conoces.</li><li><b>Repetición Espaciada:</b> Repasa las palabras hoy, mañana, en 3 días, en una semana.</li></ul>", quiz: [{type: 'mcq', question: "¿Cuál es la mejor forma de aprender la palabra 'car'?", options: ["Repetir 'car' 100 veces", "Aprender la frase 'I drive a blue car'", "Escribir 'car' 20 veces"], answer: "Aprender la frase 'I drive a blue car'"}] },
+                { id: 3, title: "Cómo Mejorar tu 'Listening' (Escucha)", explanation: "<p>Entrenar tu oído es fundamental. No tienes que entender todo al principio.</p><ul class='list-disc list-inside'><li><b>Música:</b> Escucha canciones en inglés y lee la letra (lyrics) al mismo tiempo.</li><li><b>Podcasts para principiantes:</b> Busca podcasts diseñados para estudiantes de inglés. Hablan más lento y claro.</li><li><b>Series y Películas:</b> Empieza viéndolas con subtítulos en español. Luego, cámbialos a subtítulos en inglés. El último paso es verlas sin subtítulos.</li></ul>", quiz: [{type: 'mcq', question: "Para empezar a mejorar tu listening con una película, es mejor...", options: ["Verla sin subtítulos", "Verla con subtítulos en español", "Verla con subtítulos en inglés"], answer: "Verla con subtítulos en español"}] },
+                { id: 4, title: "Claves para Empezar a Hablar", explanation: "<p>Hablar es una habilidad que se practica. ¡No tengas miedo a cometer errores!</p><ul class='list-disc list-inside'><li><b>Piensa en voz alta:</b> Describe lo que estás haciendo en inglés. 'I am opening the door'.</li><li><b>Shadowing (Sombra):</b> Escucha una frase en inglés y repítela inmediatamente, imitando la pronunciación y entonación.</li><li><b>Habla contigo mismo:</b> Hazte preguntas y respóndelas en inglés.</li><li><b>Usa el Tutor IA:</b> ¡Este chat es una herramienta perfecta para practicar sin presión!</li></ul>", quiz: [{type: 'mcq', question: "La técnica de 'shadowing' consiste en...", options: ["Hablar en la sombra", "Repetir lo que escuchas imitando la pronunciación", "Traducir todo mentalmente"], answer: "Repetir lo que escuchas imitando la pronunciación"}] },
+                { id: 5, title: "La Regla de Oro: Consistencia", explanation: "<p>Es mucho mejor estudiar <b>15 minutos todos los días</b> que 2 horas solo el sábado. Crear un hábito es la clave del éxito.</p><p>Tu cerebro necesita tiempo para procesar y asimilar la información nueva. La práctica diaria fortalece las conexiones neuronales y hace que el aprendizaje sea más natural y menos forzado.</p>", quiz: [{type: 'mcq', question: "¿Qué es más efectivo para aprender?", options: ["Estudiar 3 horas el domingo", "Estudiar 20 minutos de lunes a viernes", "Estudiar cuando te acuerdes"], answer: "Estudiar 20 minutos de lunes a viernes"}] },
+                { id: 6, title: "El Verbo 'To Be'", explanation: `<p class="mb-4">El verbo <b>'to be'</b> es el verbo más importante en inglés. Significa 'ser' o 'estar'. Lo usamos para describir personas, cosas, lugares y sentimientos.</p><h3 class="font-bold text-lg mb-2">Formas en Presente</h3><table class="w-full text-left border-collapse mb-4"><thead><tr><th class="border p-2">Afirmativo</th><th class="border p-2">Negativo</th><th class="border p-2">Pregunta</th></tr></thead><tbody><tr><td class="border p-2">I <b>am</b> happy.</td><td class="border p-2">I <b>am not</b> sad.</td><td class="border p-2"><b>Am</b> I happy?</td></tr><tr><td class="border p-2">He <b>is</b> a doctor.</td><td class="border p-2">He <b>is not</b> a teacher.</td><td class="border p-2"><b>Is</b> he a doctor?</td></tr><tr><td class="border p-2">They <b>are</b> friends.</td><td class="border p-2">They <b>are not</b> enemies.</td><td class="border p-2"><b>Are</b> they friends?</td></tr></tbody></table><p>Recuerda que 'is not' se puede contraer como <b>isn't</b> y 'are not' como <b>aren't</b>.</p>`, quiz: [{ type: 'fill', question: 'Completa la oración: I ___ a student.', answer: 'am' }, { type: 'mcq', question: 'Elige la opción correcta: She ___ from Spain.', options: ['am', 'is', 'are'], answer: 'is' }] },
+                { id: 7, title: "El Verbo 'To Have'", explanation: `<p>El verbo <b>'to have'</b> significa 'tener' y se usa para indicar posesión.</p><h3 class="font-bold text-lg mb-2">Formas en Presente</h3><ul class="list-disc list-inside mb-4"><li><b>have</b> (con I, you, we, they)</li><li><b>has</b> (con he, she, it)</li></ul><p>Ejemplos: "I <b>have</b> a car.", "She <b>has</b> a dog."</p>`, quiz: [{ type: 'mcq', question: 'Completa: "They ___ two children."', options: ['have', 'has'], answer: 'have' }] },
+                { id: 8, title: "Artículos 'A/An/The'", explanation: `<p>Los artículos definen a un sustantivo.</p><ul class="list-disc list-inside mb-4"><li><b>a/an:</b> (un, una) Se usan para algo no específico. 'a' va antes de un sonido de consonante ('a car'). 'an' va antes de un sonido de vocal ('an apple').</li><li><b>the:</b> (el, la, los, las) Se usa para algo específico que ya conocemos ('the sun').</li></ul>`, quiz: [{ type: 'mcq', question: 'Completa: "I need ___ new phone."', options: ['a', 'an', 'the'], answer: 'a' }] },
+                { id: 9, title: "Vocabulario - Números (1-20)", explanation: `<p>Los números básicos: one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty.</p>`, quiz: [{ type: 'fill', question: 'Escribe el número: 13', answer: 'thirteen' }] },
+                { id: 10, title: "Vocabulario - Números (20-100)", explanation: `<p>Las decenas son: twenty (20), thirty (30), forty (40), fifty (50), sixty (60), seventy (70), eighty (80), ninety (90). Se combinan con un guion para números intermedios: forty-two (42).</p>`, quiz: [{ type: 'fill', question: 'Escribe el número: 55', answer: 'fifty-five' }] },
+                { id: 11, title: "Vocabulario - Días de la Semana", explanation: `<p>Los días de la semana siempre se escriben con mayúscula inicial: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday.</p>`, quiz: [{ type: 'mcq', question: '¿Qué día viene después de Wednesday?', options: ['Tuesday', 'Thursday', 'Friday'], answer: 'Thursday' }] },
+                { id: 12, title: "Vocabulario - Meses del Año", explanation: `<p>Los meses también siempre se escriben con mayúscula: January, February, March, April, May, June, July, August, September, October, November, December.</p>`, quiz: [{ type: 'mcq', question: '¿Cuál es el último mes del año?', options: ['January', 'December', 'July'], answer: 'December' }] },
+                { id: 13, title: "Presente Simple", explanation: `<p>Se usa para hablar de rutinas, hábitos y hechos generales. Se añade una <b>-s</b> al final del verbo para <b>he, she, it</b>.</p><p>Ejemplos: "I work every day.", "She work<b>s</b> from home."</p>`, quiz: [{ type: 'mcq', question: 'Completa: "He ___ football."', options: ['play', 'plays'], answer: 'plays' }] },
+                { id: 14, title: "Formando Preguntas (Do/Does)", explanation: `<p>Para hacer preguntas en presente simple, usamos los auxiliares <b>Do</b> y <b>Does</b>. El verbo principal no cambia.</p><ul class="list-disc list-inside"><li><b>Do:</b> I, you, we, they</li><li><b>Does:</b> he, she, it</li></ul><p>Ejemplo: "<b>Do</b> you like pizza?", "<b>Does</b> she live here?"</p>`, quiz: [{ type: 'mcq', question: 'Completa: "___ they speak English?"', options: ['Do', 'Does'], answer: 'Do' }] },
+                { id: 15, title: "Negaciones (Don't/Doesn't)", explanation: `<p>Para hacer oraciones negativas, usamos <b>don't</b> (do not) y <b>doesn't</b> (does not). El verbo principal no cambia.</p><ul class="list-disc list-inside"><li><b>Don't:</b> I, you, we, they</li><li><b>Doesn't:</b> he, she, it</li></ul><p>Ejemplo: "I <b>don't</b> like spiders.", "He <b>doesn't</b> work on Sundays."</p>`, quiz: [{ type: 'mcq', question: 'Completa: "She ___ eat meat."', options: ["don't", "doesn't"], answer: "doesn't" }] },
+                { id: 16, title: "Adjetivos Posesivos", explanation: `<p>Indican a quién pertenece algo. Van antes del objeto: <b>my</b> car, <b>your</b> book, <b>his</b> phone, <b>her</b> dog, <b>its</b> color, <b>our</b> house, <b>their</b> team.</p>`, quiz: [{ type: 'mcq', question: 'Completa: "This is John\'s pen. It is ___ pen."', options: ['his', 'her', 'its'], answer: 'his' }] },
+                { id: 17, title: "Vocabulario - Familia", explanation: `<p>Miembros de la familia: mother (madre), father (padre), parents (padres), sister (hermana), brother (hermano), son (hijo), daughter (hija), children (hijos).</p>`, quiz: [{ type: 'mcq', question: 'Your mother\'s daughter is your...', options: ['son', 'sister', 'brother'], answer: 'sister' }] },
+                { id: 18, title: "Vocabulario - Comida", explanation: `<p>Comidas comunes: apple (manzana), bread (pan), cheese (queso), water (agua), chicken (pollo), rice (arroz), fish (pescado), salad (ensalada).</p>`, quiz: [{ type: 'mcq', question: 'Which one is a fruit?', options: ['bread', 'apple', 'rice'], answer: 'apple' }] },
+                { id: 19, title: "Plurales", explanation: `<p>La mayoría de los plurales se forman añadiendo <b>-s</b> (car -> cars). Si la palabra termina en -s, -sh, -ch, -x, se añade <b>-es</b> (box -> boxes). Si termina en consonante + y, se cambia la 'y' por <b>-ies</b> (city -> cities).</p>`, quiz: [{ type: 'mcq', question: 'What is the plural of "party"?', options: ['partys', 'parties'], answer: 'parties' }] },
+                { id: 20, title: "Preposiciones de Lugar", explanation: `<p><b>in</b> (dentro de): in the box, in London. <br><b>on</b> (sobre): on the table, on the wall. <br><b>at</b> (en un punto específico): at the door, at the bus stop.</p>`, quiz: [{ type: 'mcq', question: 'Completa: "The clock is ___ the wall."', options: ['in', 'on', 'at'], answer: 'on' }] },
+                { id: 21, title: "Presente Continuo", explanation: `<p>Se usa para acciones que están pasando AHORA. Se forma con el verbo <b>'to be' + verbo-ing</b>. Ejemplo: "I <b>am talking</b>", "She <b>is eating</b>".</p>`, quiz: [{ type: 'mcq', question: '¿Qué estás haciendo ahora? "I ___ English."', options: ['study', 'am studying'], answer: 'am studying' }] },
+                { id: 22, title: "Pasado Simple (was/were)", explanation: `<p>Es el pasado del verbo 'to be'. <b>was</b> se usa para I/he/she/it. <b>were</b> se usa para you/we/they. Ejemplo: "I <b>was</b> happy", "They <b>were</b> friends".</p>`, quiz: [{ type: 'mcq', question: 'Completa: "We ___ at the party last night."', options: ['was', 'were'], answer: 'were' }] },
+                { id: 23, title: "Pasado Simple (Verbos Regulares)", explanation: `<p>Para la mayoría de los verbos, el pasado se forma añadiendo <b>-ed</b> al final. Ejemplo: walk -> walk<b>ed</b>, play -> play<b>ed</b>. "I <b>played</b> football yesterday."</p>`, quiz: [{ type: 'mcq', question: '¿Cuál es el pasado de "watch"?', options: ['watched', 'watchd'], answer: 'watched' }] },
+                { id: 24, title: "Pasado Simple (Verbos Irregulares)", explanation: `<p>Algunos verbos importantes cambian su forma en pasado. No siguen la regla -ed. Ejemplos: go -> <b>went</b>, see -> <b>saw</b>, eat -> <b>ate</b>. "We <b>went</b> to the cinema."</p>`, quiz: [{ type: 'mcq', question: '¿Cuál es el pasado de "eat"?', options: ['eated', 'ate'], answer: 'ate' }] },
+                { id: 25, title: "Vocabulario - Ropa", explanation: `<p>Prendas comunes: shirt (camisa), pants/trousers (pantalones), shoes (zapatos), dress (vestido), hat (sombrero), jacket (chaqueta).</p>`, quiz: [{ type: 'mcq', question: 'What do you wear on your head?', options: ['shoes', 'hat'], answer: 'hat' }] },
+                { id: 26, title: "Preguntas en Pasado (Did)", explanation: `<p>Para hacer preguntas en pasado, usamos el auxiliar <b>Did</b> para TODOS los sujetos. El verbo principal vuelve a su forma base (infinitivo). Ejemplo: "<b>Did</b> you <b>go</b>?" (NO "Did you went?").</p>`, quiz: [{ type: 'mcq', question: 'Completa: "___ she see the movie?"', options: ['Did', 'Does', 'Was'], answer: 'Did' }] },
+                { id: 27, title: "Negaciones en Pasado (didn't)", explanation: `<p>Para negar en pasado, usamos <b>didn't</b> (did not) para TODOS los sujetos. El verbo principal vuelve a su forma base. Ejemplo: "She <b>didn't come</b> to the party."</p>`, quiz: [{ type: 'mcq', question: 'Completa: "They ___ like the food."', options: ["don't", "weren't", "didn't"], answer: "didn't" }] },
+                { id: 28, title: "Vocabulario - El Clima", explanation: `<p>sunny (soleado), cloudy (nublado), rainy (lluvioso), windy (ventoso), snowy (nevado), hot (caliente), cold (frío).</p>`, quiz: [{ type: 'mcq', question: 'If you need an umbrella, it is probably...', options: ['sunny', 'rainy'], answer: 'rainy' }] },
+                { id: 29, title: "'There is' / 'There are'", explanation: `<p>Se usa para indicar la existencia de algo (significa 'hay'). <b>There is</b> para singular ("There is a book"). <b>There are</b> para plural ("There are two books").</p>`, quiz: [{ type: 'mcq', question: 'Completa: "___ many people here."', options: ['There is', 'There are'], answer: 'There are' }] },
+                { id: 30, title: "Futuro Simple (will)", explanation: `<p>Se usa para decisiones espontáneas o predicciones. Se forma con <b>will + verbo (base)</b> para TODOS los sujetos. La negación es <b>won't</b>. Ejemplo: "I think it <b>will rain</b> tomorrow."</p>`, quiz: [{ type: 'mcq', question: 'Completa: "I am thirsty. I ___ drink some water."', options: ['will', 'am'], answer: 'will' }] },
+            ];
 
+            const allLessons = Array.from({ length: 30 }, (_, i) => {
+                const lessonId = i + 1;
+                const existingLesson = lessonsData.find(l => l.id === lessonId);
+                return existingLesson || { id: lessonId, title: `Episodio ${lessonId}: Tema por añadir`, explanation: '<p>Contenido próximamente...</p>', quiz: [] };
+            });
+
+            // FUNCTIONS
             const speak = (text) => {
                 if ('speechSynthesis' in window) {
                     speechSynthesis.cancel();
@@ -254,204 +250,93 @@
                     speechSynthesis.speak(utterance);
                 }
             };
-
+            
             const showView = (viewToShow) => {
-                [dashboardView, lessonsView, tutorView].forEach(v => v.classList.add('hidden'));
-                if(viewToShow === dashboardView) {
-                    dashboardView.classList.remove('hidden');
-                } else {
-                    dashboardView.classList.add('hidden');
-                    viewToShow.classList.remove('hidden');
-                }
+                [dashboardView, lessonsListView, singleLessonView, tutorView].forEach(v => v.classList.add('hidden'));
+                viewToShow.classList.remove('hidden');
                 window.scrollTo(0, 0);
             };
 
-            const userLogin = (userName) => {
-                 if (userName) {
-                    const firstName = userName.split(' ')[0];
-                    welcomeMessage.textContent = `¡Hola, ${firstName}!`;
-                    loadProgress();
+            const populateLessonView = (lessonId) => {
+                const lesson = allLessons.find(l => l.id === lessonId);
+                if (!lesson) return;
+
+                lessonTitleView.textContent = `Episodio ${lesson.id}: ${lesson.title}`;
+                lessonExplanationView.innerHTML = lesson.explanation;
+                quizTitleView.textContent = `Examen: ${lesson.title}`;
+                quizQuestionsContainer.innerHTML = '';
+
+                if (lesson.quiz.length > 0) {
+                    lesson.quiz.forEach((q, index) => {
+                        const questionEl = document.createElement('div');
+                        questionEl.dataset.answer = q.answer;
+                        if (q.type === 'fill') {
+                            questionEl.innerHTML = `<label class="font-semibold">${index + 1}. ${q.question}</label><input type="text" class="quiz-input mt-2 w-full px-3 py-2 border border-slate-300 rounded-md">`;
+                        } else if (q.type === 'mcq') {
+                            const optionsHTML = q.options.map(opt => `<label class="flex items-center gap-2"><input type="radio" name="q${index}" value="${opt}" class="quiz-input">${opt}</label>`).join('');
+                            questionEl.innerHTML = `<p class="font-semibold">${index + 1}. ${q.question}</p><div class="flex gap-4 mt-2">${optionsHTML}</div>`;
+                        }
+                        quizQuestionsContainer.appendChild(questionEl);
+                    });
+                    startQuizBtn.classList.remove('hidden');
                 } else {
-                    welcomeMessage.textContent = '¡Bienvenido!';
+                    startQuizBtn.classList.add('hidden');
                 }
-            }
-            
-            const storedUser = localStorage.getItem('lingoUser');
-            userLogin(storedUser);
-            dashboardView.classList.remove('hidden');
+                
+                lessonContentView.classList.remove('hidden');
+                lessonQuizView.classList.add('hidden');
+                quizResultsView.innerHTML = '';
+                quizResultsView.classList.add('hidden');
+                checkQuizBtn.classList.remove('hidden');
+            };
 
             const handleNavigation = (destinationView) => {
-                if (localStorage.getItem('lingoUser')) {
-                    if(destinationView === tutorView) {
-                        startNewChat();
-                    }
-                    showView(destinationView);
-                } else {
-                    targetViewAfterRegistration = destinationView;
-                    registrationModal.classList.remove('hidden');
+                if (destinationView === tutorView) {
+                    startNewChat();
                 }
-            };
-            
-            goToLessonsBtn.addEventListener('click', () => handleNavigation(lessonsView));
-            goToTutorBtn.addEventListener('click', () => handleNavigation(tutorView));
-            backButtons.forEach(btn => btn.addEventListener('click', () => showView(dashboardView)));
-
-            closeModalBtn.addEventListener('click', () => registrationModal.classList.add('hidden'));
-            registrationModal.addEventListener('click', (e) => {
-                if (e.target === registrationModal) {
-                    registrationModal.classList.add('hidden');
-                }
-            });
-
-            modalRegistrationForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const firstNameInput = document.getElementById('modal-first-name');
-                const emailInput = document.getElementById('modal-email');
-                const emailError = document.getElementById('modal-email-error');
-                
-                const userName = firstNameInput.value.trim();
-                const email = emailInput.value.trim();
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-                if (!emailRegex.test(email)) {
-                    emailError.textContent = 'Por favor, introduce un correo electrónico válido.';
-                    emailError.classList.remove('hidden');
-                    emailInput.classList.add('border-red-500');
-                    return;
-                } else {
-                    emailError.classList.add('hidden');
-                    emailInput.classList.remove('border-red-500');
-                }
-
-                if(userName) {
-                    localStorage.setItem('lingoUser', userName);
-                    userLogin(userName);
-                    registrationModal.classList.add('hidden');
-                    if (targetViewAfterRegistration) {
-                        if(targetViewAfterRegistration === tutorView) {
-                            startNewChat();
-                        }
-                        showView(targetViewAfterRegistration);
-                        targetViewAfterRegistration = null;
-                    }
-                }
-            });
-            
-            const saveProgress = () => {
-                localStorage.setItem('lingoProgress', JSON.stringify(lessonProgress));
+                showView(destinationView);
             };
 
-            const loadProgress = () => {
-                const savedProgress = localStorage.getItem('lingoProgress');
-                if (savedProgress) {
-                    lessonProgress = JSON.parse(savedProgress);
-                }
-                updateLessonsUI();
-            };
-            
-            const updateLessonsUI = () => {
-                const lessons = document.querySelectorAll('.lesson');
-                let lastCompletedId = lessonProgress.length > 0 ? Math.max(...lessonProgress) : 0;
-
-                lessons.forEach((lesson, index) => {
-                    const lessonId = index + 1;
-                    lesson.classList.remove('lesson-completed');
-                    lesson.classList.add('lesson-locked');
-
-                    if (lessonProgress.includes(lessonId)) {
-                        lesson.classList.add('lesson-completed');
-                    }
-                });
-
-                for (let i = 1; i <= lastCompletedId + 1; i++) {
-                    const lessonEl = document.getElementById(`lesson-${i}`);
-                    if (lessonEl) lessonEl.classList.remove('lesson-locked');
-                }
-            };
-            
-            const initLessons = () => {
-                document.querySelectorAll('.complete-lesson-btn').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        const lessonElement = e.target.closest('.lesson');
-                        const quiz = lessonElement.querySelector('.quiz');
-                        const feedback = lessonElement.querySelector('.quiz-feedback');
-                        let allCorrect = true;
-
-                        if (quiz) {
-                            quiz.querySelectorAll('.quiz-question').forEach(q => {
-                                const correctInput = q.querySelector('input[data-correct="true"]');
-                                if (correctInput && !correctInput.checked) {
-                                    allCorrect = false;
-                                }
-                            });
-                        }
-
-                        if (allCorrect) {
-                            const lessonId = parseInt(lessonElement.id.split('-')[1]);
-                            if (!lessonProgress.includes(lessonId)) {
-                                lessonProgress.push(lessonId);
-                                saveProgress();
-                            }
-                            
-                            if(feedback) {
-                                feedback.textContent = '¡Excelente! Has desbloqueado la siguiente lección.';
-                                feedback.className = 'quiz-feedback correct';
-                                feedback.style.display = 'block';
-                            }
-                            
-                            updateLessonsUI();
-                            
-                            const summary = lessonElement.querySelector('summary');
-                            if (summary && lessonElement.open) {
-                                summary.click();
-                            }
-                            
-                            button.disabled = true;
-                            button.style.backgroundColor = '#9ca3af';
-                        } else if(feedback) {
-                            feedback.textContent = 'Algunas respuestas son incorrectas. ¡Inténtalo de nuevo!';
-                            feedback.className = 'quiz-feedback incorrect';
-                            feedback.style.display = 'block';
-                        }
+            const initLessonsList = () => {
+                lessonsContainer.innerHTML = '';
+                allLessons.forEach(lesson => {
+                    const button = document.createElement('button');
+                    button.className = 'w-full text-left bg-white p-4 sm:p-5 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300';
+                    button.innerHTML = `<h3 class="text-lg font-semibold text-slate-700">${lesson.id}. ${lesson.title}</h3>`;
+                    button.addEventListener('click', () => {
+                        populateLessonView(lesson.id);
+                        showView(singleLessonView);
                     });
+                    lessonsContainer.appendChild(button);
                 });
             };
             
             const startNewChat = () => {
                 const chatWindow = document.getElementById('chat-window');
-                chatWindow.innerHTML = ''; // Clear previous messages
+                chatWindow.innerHTML = '';
                 chatHistory = [];
-                const firstMessage = "Hello! I'm your AI Tutor. You can practice conversation with me or ask me questions about any lesson. For example, try asking 'Can you explain lesson 1?'";
-                const firstMessageSpanish = "¡Hola! Soy tu Tutor IA. Puedes practicar tu conversación o hacerme preguntas sobre cualquier lección. Por ejemplo, intenta preguntar '¿Puedes explicar la lección 1?'";
+                const firstMessage = "Hello! I'm your AI Tutor. You can practice conversation with me or ask me questions about any lesson.";
+                const firstMessageSpanish = "¡Hola! Soy tu Tutor IA. Puedes practicar tu conversación o hacerme preguntas sobre cualquier lección.";
                 addAiMessage(firstMessage, firstMessageSpanish);
             };
 
             const addAiMessage = (englishText, spanishText, isLoading = false) => {
                 const chatWindow = document.getElementById('chat-window');
                 const messageId = `ai-msg-${Date.now()}`;
-                
                 const aiMessage = document.createElement('div');
                 aiMessage.id = messageId;
-                aiMessage.className = 'flex items-start gap-3';
-                let content = '';
-                if(isLoading) {
-                    content = '<div class="loader"></div>';
-                } else {
-                     content = `
-                        <p class="text-sm">${englishText}</p>
-                        <p class="text-xs text-slate-500 italic mt-2 pt-2 border-t border-slate-200">${spanishText}</p>
-                        <button class="speak-btn absolute -top-2 -right-2 w-7 h-7 bg-white rounded-full shadow border flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" data-text="${englishText.replace(/"/g, '&quot;')}">
-                            <svg class="w-4 h-4 text-blue-600" viewBox="0 0 20 20" fill="currentColor"><path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" /></svg>
-                        </button>
-                    `;
-                }
-
+                aiMessage.className = 'flex items-start gap-3 chat-message-enter';
+                let content = isLoading ? '<div class="loader"></div>' : `
+                    <p class="text-sm">${englishText}</p>
+                    <p class="text-xs text-slate-500 italic mt-2 pt-2 border-t border-slate-200">${spanishText}</p>
+                    <button class="speak-btn absolute -top-2 -right-2 w-7 h-7 bg-white rounded-full shadow border flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" data-text="${englishText.replace(/"/g, '&quot;')}">
+                        <svg class="w-4 h-4 text-blue-600" viewBox="0 0 20 20" fill="currentColor"><path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" /></svg>
+                    </button>
+                `;
                 aiMessage.innerHTML = `<span class="flex-shrink-0 inline-flex items-center justify-center h-10 w-10 rounded-full bg-blue-100 text-blue-700 font-bold">AI</span><div class="relative bg-slate-100 p-3 rounded-lg rounded-tl-none max-w-xs group">${content}</div>`;
-                
                 chatWindow.appendChild(aiMessage);
                 chatWindow.scrollTop = chatWindow.scrollHeight;
-                
-                if(!isLoading) {
+                if (!isLoading) {
                     chatHistory.push({ role: 'model', parts: [{ text: englishText }] });
                     speak(englishText);
                 }
@@ -460,7 +345,7 @@
 
             const updateAiMessage = (messageId, englishText, spanishText) => {
                 const messageElement = document.getElementById(messageId);
-                if(messageElement) {
+                if (messageElement) {
                     const contentDiv = messageElement.querySelector('div.relative');
                     contentDiv.innerHTML = `
                         <p class="text-sm">${englishText}</p>
@@ -477,41 +362,29 @@
             async function callGeminiAPI(fullPrompt, retries = 3, delay = 1000) {
                 const apiKey = "";
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-
                 const payload = {
                     contents: fullPrompt,
-                    systemInstruction: {
-                        parts: [{ text: "You are Lingo, a friendly and encouraging AI English tutor. Your goal is to help users learn English. Keep your answers concise and easy to understand for a beginner. Always respond in English first, then provide a simple Spanish translation. Use '|||' as a separator between the English response and the Spanish translation. For example: 'That's correct! ||| ¡Eso es correcto!'" }]
-                    }
+                    systemInstruction: { parts: [{ text: "You are Lingo, a friendly AI English tutor. Keep answers concise for a beginner. Always respond in English first, then provide a Spanish translation, using '|||' as a separator. Example: 'That's correct! ||| ¡Eso es correcto!'" }] }
                 };
-                
                 try {
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-                    if (!response.ok) {
-                        throw new Error(`API call failed with status: ${response.status}`);
-                    }
+                    const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                    if (!response.ok) throw new Error(`API call failed: ${response.status}`);
                     const result = await response.json();
                     const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
                     if (text) {
                         const parts = text.split('|||');
                         return { english: parts[0].trim(), spanish: parts[1] ? parts[1].trim() : "No se pudo traducir." };
-                    } else {
-                        return { english: "I'm not sure how to respond to that. Can you try asking another way?", spanish: "No estoy seguro de cómo responder a eso. ¿Puedes intentar preguntar de otra manera?" };
                     }
-                } catch(error) {
-                    console.error("Gemini API call error:", error);
-                     if (retries > 0) {
+                    return { english: "I'm not sure how to respond. Can you ask another way?", spanish: "No estoy seguro de cómo responder. ¿Puedes preguntar de otra manera?" };
+                } catch (error) {
+                    console.error("Gemini API error:", error);
+                    if (retries > 0) {
                         await new Promise(res => setTimeout(res, delay));
                         return callGeminiAPI(fullPrompt, retries - 1, delay * 2);
                     }
-                    return { english: "Sorry, I'm having trouble connecting right now. Please try again in a moment.", spanish: "Lo siento, tengo problemas para conectarme en este momento. Por favor, inténtalo de nuevo en un momento." };
+                    return { english: "Sorry, I'm having trouble connecting. Please try again.", spanish: "Lo siento, tengo problemas para conectarme. Por favor, inténtalo de nuevo." };
                 }
             }
-
 
             const initChat = () => {
                 const chatWindow = document.getElementById('chat-window');
@@ -521,9 +394,8 @@
                 const rolePlayButtons = document.querySelectorAll('.role-play-btn');
 
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                let recognition;
                 if (SpeechRecognition) {
-                    recognition = new SpeechRecognition();
+                    const recognition = new SpeechRecognition();
                     recognition.lang = 'en-US';
                     recognition.interimResults = false;
                     micButton.addEventListener('click', () => {
@@ -534,7 +406,7 @@
                     recognition.onend = () => micButton.classList.remove('is-listening');
                     recognition.onresult = (event) => {
                         chatInput.value = event.results[0][0].transcript;
-                        setTimeout(sendMessage, 300);
+                        setTimeout(() => sendMessage(), 300);
                     };
                 } else {
                     if (micButton) micButton.style.display = 'none';
@@ -545,7 +417,7 @@
                     if (messageText === '') return;
                     
                     const userMessage = document.createElement('div');
-                    userMessage.className = 'flex justify-end';
+                    userMessage.className = 'flex justify-end chat-message-enter';
                     userMessage.innerHTML = `<div class="bg-blue-600 text-white p-3 rounded-lg rounded-br-none max-w-xs"><p class="text-sm">${messageText}</p></div>`;
                     chatWindow.appendChild(userMessage);
                     chatInput.value = '';
@@ -572,14 +444,10 @@
                 rolePlayButtons.forEach(button => {
                     button.addEventListener('click', () => {
                         let scenario = button.textContent.trim();
-                        let prompt = `Let's start a role-play scenario. ${scenario}. You start.`;
-                        if(scenario.includes('Ordering Coffee')) {
-                            prompt = `Let's role-play. I am a customer at a coffee shop. You are the barista. Start by greeting me and asking for my order.`;
-                        } else if(scenario.includes('Job Interview')) {
-                            prompt = `Let's role-play. I am a candidate for a software developer job. You are the interviewer. Start by welcoming me to the interview.`;
-                        } else if(scenario.includes('Meeting a new person')) {
-                            prompt = `Let's role-play. We are meeting for the first time at a party. You start the conversation.`;
-                        }
+                        let prompt = '';
+                        if(scenario.includes('Ordering Coffee')) prompt = "Let's role-play. I'm a customer at a coffee shop. You're the barista. Greet me and ask for my order.";
+                        else if(scenario.includes('Job Interview')) prompt = "Let's role-play. I'm a candidate for a developer job. You're the interviewer. Welcome me.";
+                        else if(scenario.includes('Meeting a new person')) prompt = "Let's role-play. We're meeting at a party. You start the conversation.";
                         
                         startNewChat();
                         sendMessage(prompt);
@@ -587,11 +455,48 @@
                 });
             };
             
-            initLessons();
+            // EVENT LISTENERS
+            goToLessonsListBtn.addEventListener('click', () => handleNavigation(lessonsListView));
+            goToTutorBtn.addEventListener('click', () => handleNavigation(tutorView));
+            backButtons.forEach(btn => btn.addEventListener('click', () => showView(dashboardView)));
+            backToLessonsListBtn.addEventListener('click', () => showView(lessonsListView));
+            
+            startQuizBtn.addEventListener('click', () => {
+                lessonContentView.classList.add('hidden');
+                lessonQuizView.classList.remove('hidden');
+            });
+            
+            checkQuizBtn.addEventListener('click', () => {
+                let score = 0;
+                const questions = quizQuestionsContainer.querySelectorAll('div[data-answer]');
+                questions.forEach(q => {
+                    const correctAnswer = q.dataset.answer.toLowerCase();
+                    const input = q.querySelector('.quiz-input');
+                    let userAnswer;
+                    if (input.type === 'radio') {
+                         const checked = q.querySelector('input:checked');
+                         userAnswer = checked ? checked.value.toLowerCase() : '';
+                    } else {
+                         userAnswer = input.value.trim().toLowerCase();
+                    }
+                    if(userAnswer === correctAnswer) {
+                        score++;
+                        q.querySelector('label, p').classList.add('text-green-600');
+                    } else {
+                         q.querySelector('label, p').classList.add('text-red-600');
+                    }
+                });
+                quizResultsView.innerHTML = `<p class="text-xl font-bold">Tu Puntuación: ${score} de ${questions.length}</p>`;
+                quizResultsView.classList.remove('hidden');
+                checkQuizBtn.classList.add('hidden');
+            });
+            
+            // INITIALIZATION
+            dashboardView.classList.remove('hidden');
+            initLessonsList();
             initChat();
         });
     </script>
 </body>
 </html>
-
 
